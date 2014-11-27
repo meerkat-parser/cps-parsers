@@ -1,0 +1,48 @@
+#!/usr/bin/Rscript
+
+library(extrafont)
+loadfonts()
+
+pdf("plot_cm.pdf", family="CM Roman", height=3, width=5)
+par(cex.lab=0.6)
+par(cex.axis=0.6)
+options(scipen=10000)
+
+par(mar = c(3.5,3.3,0.2,0.2))
+
+data <- read.table("../results/gamma3.txt", sep="", header=T)
+
+newdata <- data.frame(matrix(nrow=0, ncol=2)) 
+
+for (i in seq(from=1, to=nrow(data), by=10)) {
+    s <- subset(subset(data[i:(i+9),], select=c(size, user_time)))
+    newdata <- rbind(newdata, c(s$size[1], median(s$user_time)))
+}
+names(newdata) <- c("size", "user_time")
+
+gamma <- newdata
+
+fit3 = lm(gamma$user_time ~ poly(gamma$size, 3, raw=TRUE))
+
+pol3 <- function(x) fit3$coefficient[4]*x^3 + fit3$coefficient[3]*x^2 + fit3$coefficient[2]*x + fit3$coefficient[1]
+
+eq <- bquote(italic(.(fit3$coefficient[4])*x^3 + .(fit3$coefficient[3])*x^2 + .(fit3$coefficient[2])*x + .(fit3$coefficient[1])))
+
+curve(pol3, col="red", lwd=1, xlim=c(0,500), xlab="", ylab="")
+
+title(xlab = "Size (#characters)", line = 2.5, adj=0.5)
+title(ylab = "CPU time (milliseconds)", line = 2.5)
+
+points(gamma$size, gamma$user_time, type="p", pch=19, cex=0.4)
+
+text(x=320, y=10000, cex=0.6, eq)
+
+r2 <- summary(fit3)$adj.r.squared
+
+eq2 <- bquote(italic(R^2 ~ "=" ~ .(r2)))
+text(x=320, y=9400, cex=0.6, eq2) 
+
+legend("topleft", lty=c(NA, 1), col=c("black", "red"), pch=c(19, NA), cex=0.7, legend=c("GPC", "Cubic Fit"))
+
+dev.off()
+embed_fonts("plot_cm.pdf", outfile="gamma3.pdf")

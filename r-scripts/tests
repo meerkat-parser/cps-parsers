@@ -1,0 +1,15 @@
+#!/usr/bin/Rscript
+
+gll <- read.table("../results/gll.txt", sep="", header=T)
+gamma3 <- read.table("../results/gamma3.txt", sep="", header=T)
+scannerless <- read.table("../results/java-scannerless.txt", sep="", header=T)
+regex <- read.table("../results/java-regex.txt", sep="", header=T)
+
+all(gamma3$ambiguities == gll$ambiguities)
+all(gamma3$packed_nodes == gll$packed_nodes)
+all(gamma3$terminal_nodes == gll$terminal_nodes)
+all(gamma3$intermediate_nodes == gll$intermediate_nodes)
+all(gamma3$nonterminal_nodes == gll$nonterminal_nodes)
+all(scannerless$ambiguous_nodes == 0)
+all(regex$ambiguous_nodes == 0)
+

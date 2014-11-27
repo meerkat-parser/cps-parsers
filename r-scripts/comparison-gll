@@ -1,0 +1,49 @@
+#!/usr/bin/Rscript
+
+library(extrafont)
+loadfonts()
+
+pdf("plot_cm.pdf", family="CM Roman", height=3, width=5)
+par(cex.lab=0.6)
+par(cex.axis=0.6)
+
+par(mar = c(3.5,3,0.2,0.2))
+
+data <- read.table("../results/gll.txt", sep="", header=T)
+
+newdata <- data.frame(matrix(nrow=0, ncol=2)) 
+
+for (i in seq(from=1, to=nrow(data), by=10)) {
+    s <- subset(subset(data[i:(i+9),], select=c(size, user_time)))
+    newdata <- rbind(newdata, c(s$size[1], median(s$user_time)))
+}
+names(newdata) <- c("size", "user_time")
+old <- newdata
+
+
+data <- read.table("../results/gamma3.txt", sep="", header=T)
+
+newdata <- data.frame(matrix(nrow=0, ncol=2))
+
+for (i in seq(from=1, to=nrow(data), by=10)) {
+    s <- subset(subset(data[i:(i+9),], select=c(size, user_time)))
+    newdata <- rbind(newdata, c(s$size[1], median(s$user_time)))
+}
+names(newdata) <- c("size", "user_time")
+new <- newdata
+
+
+plot(old$size,old$user_time,xlab="",ylab="", pch=4, axes = F, cex=0.6)
+axis(side = 1)
+axis(side = 2, seq(0, 90000, by = 10000), las=2, labels=seq(0, 90, by=10))
+title(xlab = "Number of b's", line = 2.5, adj=0.5)
+title(ylab = "CPU time (seconds)", line = 2.0, adj=0.5)
+
+points(new$size, new$user_time, type="p", pch=8, cex=0.6)
+
+box()
+
+legend("topleft", pch = c(4, 8), cex=0.7, legend = c("GLL", "GPC"))
+
+dev.off()
+embed_fonts("plot_cm.pdf", outfile="comparison_gll.pdf")

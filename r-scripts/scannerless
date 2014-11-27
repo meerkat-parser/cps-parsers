@@ -1,0 +1,48 @@
+#!/usr/bin/Rscript
+
+library(extrafont)
+loadfonts()
+
+pdf("plot_cm.pdf", family="CM Roman", height=3, width=5)
+par(cex.lab=0.6)
+par(cex.axis=0.6)
+options(scipen=10000)
+
+par(mar = c(3.5,3.3,0.2,0.2))
+
+data <- read.table("../results/java-scannerless.txt", sep="", header=T)
+
+newdata <- data.frame(matrix(nrow=0, ncol=2)) 
+
+for (i in seq(from=1, to=nrow(data), by=10)) {
+    s <- subset(subset(data[i:(i+9),], select=c(size, user_time)))
+    newdata <- rbind(newdata, c(s$size[1], median(s$user_time)))
+}
+names(newdata) <- c("size", "user_time")
+
+scannerless <- newdata
+
+options(scipen=10000)
+
+plot(scannerless$size, scannerless$user_time, pch=3, xlab="", ylab="", ylim=c(0, 3500), cex=0.6)
+
+title(xlab = "Size (#characters)", line = 2.5, adj=0.5)
+title(ylab = "CPU time (milliseconds)", line = 2.5)
+
+fit = lm(scannerless$user_time ~ scannerless$size)
+
+abline(lm(scannerless$user_time ~ scannerless$size), col="red")
+
+eq <- bquote(italic(.(fit$coefficient[2])*x + .(fit$coefficient[1])))
+
+text(x=250000, y=3400, cex=0.6, eq)
+
+r2 <- summary(fit)$adj.r.squared
+
+eq2 <- bquote(italic(R^2 ~ "=" ~ .(r2)))
+text(x=250000, y=3200, cex=0.6, eq2)
+
+legend("topleft", lty=c(NA, 1), col=c("black", "red"), pch=c(3, NA), cex=0.7, legend=c("GPC", "Linear Fit"))
+
+dev.off()
+embed_fonts("plot_cm.pdf", outfile="scannerless.pdf")

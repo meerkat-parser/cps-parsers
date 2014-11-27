@@ -1,0 +1,51 @@
+#!/usr/bin/Rscript
+
+library(extrafont)
+loadfonts()
+
+pdf("plot_cm.pdf", family="CM Roman", height=2, width=3)
+
+par(mar = c(3.5, 0.2, 0.2, 0.2))
+par(cex.lab=0.6)
+par(cex.axis=0.6)
+
+data <- read.table("../results/java-scannerless.txt", sep="", header=T)
+
+newdata <- data.frame(matrix(nrow=0, ncol=2)) 
+
+for (i in seq(from=1, to=nrow(data), by=10)) {
+    s <- subset(subset(data[i:(i+9),], select=c(size, user_time)))
+    newdata <- rbind(newdata, c(s$size[1], median(s$user_time)))
+}
+names(newdata) <- c("size", "user_time")
+
+scannerless <- newdata
+
+
+data <- read.table("../results/java-regex.txt", sep="", header=T)
+
+newdata <- data.frame(matrix(nrow=0, ncol=2)) 
+
+for (i in seq(from=1, to=nrow(data), by=10)) {
+    s <- subset(subset(data[i:(i+9),], select=c(size, user_time)))
+    newdata <- rbind(newdata, c(s$size[1], median(s$user_time)))
+}
+names(newdata) <- c("size", "user_time")
+
+regex <- newdata
+
+relative <- data.frame(matrix(nrow=nrow(regex), ncol=1))
+names(relative) <- c("speedup")
+relative$speedup <- scannerless$user_time / regex$user_time
+relative <- subset(relative, is.finite(speedup))
+
+boxplot(relative$speedup,
+        horizontal=TRUE, outline=FALSE, axes = F)
+axis(side = 1, seq(0, 14, by = 1), labels=seq(0, 14, by=1))
+
+title(xlab = "Speedup", line = 2.5, adj=0.5)
+
+box()
+
+dev.off()
+embed_fonts("plot_cm.pdf", outfile="speedup.pdf")
