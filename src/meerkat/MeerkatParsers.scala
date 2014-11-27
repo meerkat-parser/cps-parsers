@@ -5,10 +5,7 @@
  *     Anastasia Izmaylova  <anastasia.izmaylova@cwi.nl>
  *     Ali Afroozeh         <ali.afroozeh@cwi.nl>
  */
-package meerkat/**
-
- * @author Ali Afroozeh
- */
+package meerkat
 
 import scala.collection.mutable._
 import sppf._

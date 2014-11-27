@@ -31,7 +31,7 @@ object BenchmarkJavaRegex {
         val s = start(CompilationUnit)
       
         for (_ <- 0 until warmupCount) {
-          val input = scala.io.Source.fromFile("/Users/aliafroozeh/test.java").mkString
+          val input = scala.io.Source.fromFile("test-files/warmup.java").mkString
           parse(input, s, ALL_PARSES)
         }
         
@@ -42,7 +42,7 @@ object BenchmarkJavaRegex {
         for (f <- files)  {
 			val input: String = scala.io.Source.fromFile(f).mkString
 			
-			println(f + " ")
+			println("#" + f)
 			
 			for(i <- 0 until runCount) {
 			  val result = parse(input, s, ALL_PARSES)

@@ -31,7 +31,7 @@ object BenchmarkJavaCharLevel {
         val s = start(CompilationUnit)
       
         for (_ <- 0 until warmupCount) {
-          val input = scala.io.Source.fromFile("/Users/aliafroozeh/test.java").mkString
+          val input = scala.io.Source.fromFile("test-files/warmup.java").mkString
           parse(input, s, ALL_PARSES)
         }
         
