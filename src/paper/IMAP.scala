@@ -20,7 +20,7 @@ object IMAP extends MeerkatParsers {
   val Number: MeerkatParser = "Number" ::= """0|[1-9][0-9]*""".r
   val OCTET: MeerkatParser = "OCTET" ::= """.""".r
   
-  val Number2: MeerkatDDParser[Int] = Number.addStr.map(s => s.toInt)
+  val Number2: MeerkatDDParser[Int] = Number.toStr.map(s => s.toInt)
   
   val literal8: MeerkatDDParser[Unit] 
     = "~{" ~^ Number2 ~> "+".? ~> "}" ~^ (n => OCTET.*(n))

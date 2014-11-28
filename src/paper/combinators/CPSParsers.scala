@@ -26,10 +26,12 @@ trait CPSDDParsers extends CPSParsers {
   
   type DDParser[T] = Int => Result[(NonPackedNode, T)]
   
-  def seq1[T, U](p: DDParser[T], f: T => DDParser[U]): DDParser[U]
+  def seq[T,U](p: DDParser[T], f: T => DDParser[U]): DDParser[U]
     = fixpoint[U](q => i => p(i).flatMap(t1 => f(t1._2)(t1._1.rightExtent).map(t2 => (sppf.getIntermediateNode(q, t1._1, t2._1), t2._2))))
     
-  def seq2[T, U](p1: DDParser[T], p2: DDParser[U]): DDParser[T] = seq1(p1, (t: T) => map(p2, (_: U) => t))
+  def seq_left[T,U](p1: DDParser[T], p2: DDParser[U]): DDParser[T] = seq(p1, (t:T) => map(p2, (u:U) => t))
+  
+  def seq_right[T,U](p1: DDParser[T], p2: DDParser[U]): DDParser[U] = seq(p1, (t:T) => p2)
     
   def map[T, U](p: DDParser[T], f: T => U): DDParser[U] = i => p(i).map(t => (t._1, f(t._2)))
   

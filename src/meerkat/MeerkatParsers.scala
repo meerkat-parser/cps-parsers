@@ -408,7 +408,7 @@ trait MeerkatDDParser[T] extends DDParser[T] {
   def ~>[U](q: MeerkatDDParser[U])(implicit l: Layout): MeerkatDDParser[T] = this ~~> l.parser ~~> q
   def ~^[U](q: MeerkatDDParser[U])(implicit l: Layout): MeerkatDDParser[U] = this ~~> l.parser ~~^ q
         
-  def addStr: MeerkatDDParser[String] = {
+  def toStr: MeerkatDDParser[String] = {
     val p = ddparser((input, sppf, i) => this(input, sppf, i).mapNoMemo(t => (t._1, input.substring(t._1.leftExtent, t._1.rightExtent))))
     p.nameAs(this.name.value)
     if(this.sequenced) p.sequence
